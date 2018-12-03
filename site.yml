@@ -1,59 +1,53 @@
 ---
 
-
 - hosts: ucs
-  connection: local
-  gather_facts: no
+  connection: local
+  gather_facts: no
 
+  tasks:
+  - name: Test that we have a UCS host, UCS username, and UCS password
+    fail:
+      msg: 'Please define the following variables: ucs_hostname, ucs_username and ucs_password.'
+    when: ucs_hostname is not defined or ucs_username is not defined or ucs_password is not defined
+    vars:
+      login_info: &login_info
+        hostname: "{{ ucs_hostname }}"
+        username: "{{ ucs_username }}"
+        password: "{{ ucs_password }}"
+#  - meta: end_play
 
-  tasks:
-  - name: Test that we have a UCS host, UCS username, and UCS password
-    fail:
-      msg: 'Please define the following variables: ucs_hostname, ucs_username and ucs_password.'
-    when: ucs_hostname is not defined or ucs_username is not defined or ucs_password is not defined
-    vars:
-      login_info: &login_info
-        hostname: "{{ ucs_hostname }}"
-        username: "{{ ucs_username }}"
-        password: "{{ ucs_password }}"
-#  - meta: end_play
+  - name: Add Org
+    ucs_org:
+      <<: *login_info
+      org_name: CANCUN
+      description: Ansible Test
+      state: "{{ ucs_state }}"
+      delegate_to: localhost
+#  - meta: end_play
 
+  - name: Configure Time Zone
+    ucs_timezone:
+      <<: *login_info
+      state: "{{ ucs_state }}"
+      admin_state: enabled
+      timezone: America/New_York (Eastern Time)
+      description: 'Time Zone for Cancun'
+#  - meta: end_play
 
-  - name: Add Org
-    ucs_org:
-      <<: *login_info
-      org_name: CANCUN
-      description: Ansible Test
-      state: "{{ ucs_state }}"
-      delegate_to: localhost
-#  - meta: end_play
+  - name: Configure NTP server
+    ucs_ntp_server:
+      <<: *login_info
+      ntp_server: 10.10.10.10
+      description: Internal NTP Server by IP address
+      state: present
+#  - meta: end_play
 
-
-  - name: Configure Time Zone
-    ucs_timezone:
-      <<: *login_info
-      state: "{{ ucs_state }}"
-      admin_state: enabled
-      timezone: America/New_York (Eastern Time)
-      description: 'Time Zone for Cancun'
-#  - meta: end_play
-
-
-  - name: Configure NTP server
-    ucs_ntp_server:
-      <<: *login_info
-      ntp_server: 10.10.10.10
-      description: Internal NTP Server by IP address
-      state: present
-#  - meta: end_play
-
-
-  - name: Configure VLANs
-    ucs_vlans:
-      <<: *login_info
-      name: "vlan{{ item.id }}"
-      id: "{{ item.id }}"
-      native: "{{ item.native }}"
-    loop:
-      - { id: '100', native: 'no' }
-      - { id: '101', native: 'no' }
+  - name: Configure VLANs
+    ucs_vlans:
+      <<: *login_info
+      name: "vlan{{ item.id }}"
+      id: "{{ item.id }}"
+      native: "{{ item.native }}"
+    loop:
+      - { id: '100', native: 'no' }
+      - { id: '101', native: 'no' }
