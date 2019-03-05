@@ -14,16 +14,15 @@
         hostname: "{{ ucs_hostname }}"
         username: "{{ ucs_username }}"
         password: "{{ ucs_password }}"
-  - meta: end_play
 
   - name: Add Org
     ucs_org:
       <<: *login_info
-      org_name: CANCUN
+      org_name: CiscoLive
       description: Ansible Test
       state: "{{ ucs_state }}"
       delegate_to: localhost
-  - meta: end_play
+  # - meta: end_play
 
   - name: Configure Time Zone
     ucs_timezone:
@@ -31,8 +30,8 @@
       state: "{{ ucs_state }}"
       admin_state: enabled
       timezone: America/New_York (Eastern Time)
-      description: 'Time Zone for Cancun'
-  - meta: end_play
+      description: 'Time Zone for CiscoLive'
+  # - meta: end_play
 
   - name: Configure NTP server
     ucs_ntp_server:
@@ -40,7 +39,7 @@
       ntp_server: 10.10.10.10
       description: Internal NTP Server by IP address
       state: present
-  - meta: end_play
+  # - meta: end_play
 
   - name: Configure VLANs
     ucs_vlans:
