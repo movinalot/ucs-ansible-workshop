@@ -40,6 +40,16 @@
       description: Internal NTP Server by IP address
       state: present
   # - meta: end_play
+  
+  - name: Configure DNS server
+    ucs_dns_server:
+      <<: *login_info
+      dns_server: "{{ item.dns_server }}"
+      description: "{{ item.description }}"
+      state: "{{ ucs_state }}"
+      delegate_to: localhost
+    loop:
+      "{{ DNS_SERVERS }}"
 
   - name: Configure VLANs
     ucs_vlans:
