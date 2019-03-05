@@ -1,0 +1,2 @@
+[ucs]
+ucs1 ucs_hostname=198.18.133.91 ucs_username=admin ucs_password=password ucs_state=present
